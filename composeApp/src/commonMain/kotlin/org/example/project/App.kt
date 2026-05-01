@@ -4,6 +4,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Refresh
@@ -137,6 +139,8 @@ fun NewsItem(article: Article, onClick: () -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ArticleDetailScreen(article: Article, onBack: () -> Unit) {
+    val scrollState = rememberScrollState()
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -153,6 +157,7 @@ fun ArticleDetailScreen(article: Article, onBack: () -> Unit) {
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
+                .verticalScroll(scrollState)
                 .padding(16.dp)
         ) {
             article.urlToImage?.let { url ->
@@ -169,10 +174,19 @@ fun ArticleDetailScreen(article: Article, onBack: () -> Unit) {
                 style = MaterialTheme.typography.headlineSmall
             )
             Spacer(modifier = Modifier.height(16.dp))
+            
+            val displayContent = when {
+                !article.content.isNullOrBlank() -> article.content
+                !article.description.isNullOrBlank() -> article.description
+                else -> "No content available for this article."
+            }
+
             Text(
-                text = article.content ?: article.description ?: "No content available.",
+                text = displayContent,
                 style = MaterialTheme.typography.bodyLarge
             )
+            
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }
